@@ -28,6 +28,28 @@ export function signinUser({email, password}) {
     }
 }
 
+export function signupUser({email, password}) {
+    return function (dispatch) {
+
+        axios.post(`${ROOT_URL}/signup`, { email, password })
+            .then(response => {
+                // if request is good...
+                // - update state to indicate user is authenticated
+                dispatch({ type: AUTH_USER });
+                // - save jwt token into local storage
+                localStorage.setItem('token', response.data.token);
+                // - redirect to the route '/feature'
+                browserHistory.push('/feature');
+            })
+            .catch((error) => {
+                // if request is bad...
+                // - show an error to the user
+                console.log(error);
+                dispatch(authError(error.response.data.error));  
+            });
+    }
+}
+
 export function authError(error) {
     return {
         type: AUTH_ERROR,
